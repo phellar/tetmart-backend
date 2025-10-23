@@ -32,18 +32,27 @@ class ProductController extends Controller
             'product_name' => 'required | string| max:255', 
             'description' => 'required | string| max:255', 
             'price' => 'required |numeric| max:255', 
+            'product-image_url'=>'required|string'
         ]);
 
+        // handler for product image upload
+        $imagePath = null;
+        if($request->hasFile('product-image_url')){
+            $imagePath = $request->file('product-image_url')->store('products' , 'public');
+        } 
+        // return error if forms are not filled well
         if($validator->fails()){
             return response()->json([
                 'message' => 'All Fields are required'
             ],422);
         }
 
+
         $product = Product::create([
             'product_name'=> $request->product_name,
             'description'=> $request->description,
             'price'=> $request->price,
+            'product-image_url'=>$imagePath,
             'user_id'=>auth()->id()
         ]);
 
@@ -60,7 +69,7 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    // update a specific product details
+    // update a specific product details, this can only be done by product owner/user (Auth)
     public function update(Request $request, Product $product)
     {
 
@@ -69,7 +78,14 @@ class ProductController extends Controller
             'product_name' => 'required | string| max:255', 
             'description' => 'required | string| max:255', 
             'price' => 'required |numeric| max:255', 
+            'product-image_url'=>'required|string'
         ]);
+
+         // handler for product image upload
+         $imagePath = null;
+         if($request->hasFile('product-image_url')){
+             $imagePath = $request->file('product-image_url')->store('products' , 'public');
+         } 
 
         if($validator->fails()){
             return response()->json([
@@ -80,7 +96,8 @@ class ProductController extends Controller
         $product->update([
             'product_name'=> $request->product_name,
             'description'=> $request->description,
-            'price'=> $request->price
+            'price'=> $request->price,
+            'product-image_url'=>$imagePath
         ]);
 
         return response()->json([

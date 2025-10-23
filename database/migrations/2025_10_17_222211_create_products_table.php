@@ -16,8 +16,9 @@ return new class extends Migration
             $table->timestamps();
             $table->string('product_name');
             $table->string('description');
-            $table->integer('price');
+            $table->numeric('price');
             $table->foreignId('user_id')->constraint()->onDelete('cascade');
+            $table->string('product-image_url');
         });
     }
 

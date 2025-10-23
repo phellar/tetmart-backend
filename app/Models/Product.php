@@ -12,11 +12,17 @@ class Product extends Model
         'product_name',
         'description',
         'price',
-        'user_id'
+        'user_id',
+        'product-image_url'
     ];
 
    
     public function user(): BelongsTo{
         return $this->belongsTo(User::class);
+    }
+
+    // product can appear in many order
+    public function orderItems(){
+        return $this->hasMany(OrderItem::class);
     }
 }

@@ -44,7 +44,7 @@ class ProfilePolicy
      */
     public function delete(User $user, user $model): bool
     {
-        return false;
+        return $user->id ===  $model->id;
     }
 
     /**

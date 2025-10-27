@@ -15,11 +15,13 @@ class ProductController extends Controller
     // display all products
     public function index()
     {
-        $products = Product::get();
+        // paginated the products upon api call
+        $products = Product::paginate(15);
 
         if($products -> count() > 0){
-            return ProductResource::collection($products);
+            return ProductResource::collection($products);            
         }
+
         else{
             return response()->json(['message' => 'No Products available'],200);
         }
@@ -28,18 +30,21 @@ class ProductController extends Controller
     // create a product and save to database
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(),[
-            'product_name' => 'required | string| max:255', 
-            'description' => 'required | string| max:255', 
-            'price' => 'required |numeric| max:255', 
-            'product-image_url'=>'required|string'
+            'product_name' => 'required |string|max:255', 
+            'description' => 'required |string|max:255', 
+            'price' => 'required |numeric', 
+            'product_image_url'=>'required|string'
         ]);
 
         // handler for product image upload
         $imagePath = null;
-        if($request->hasFile('product-image_url')){
-            $imagePath = $request->file('product-image_url')->store('products' , 'public');
+
+        if($request->hasFile('product_image_url')){
+            $imagePath = $request->file('product_image_url')->store('products' , 'public');
         } 
+        
         // return error if forms are not filled well
         if($validator->fails()){
             return response()->json([
@@ -47,12 +52,12 @@ class ProductController extends Controller
             ],422);
         }
 
-
         $product = Product::create([
             'product_name'=> $request->product_name,
             'description'=> $request->description,
             'price'=> $request->price,
-            'product-image_url'=>$imagePath,
+            'product_image_url'=>$imagePath,
+            // 'product_image_url'=>$request->product_image_url,
             'user_id'=>auth()->id()
         ]);
 
@@ -66,7 +71,7 @@ class ProductController extends Controller
     // Display the specific product
     public function show(Product $product)
     {
-        return new ProductResource($product);
+        return $this->authorize(new ProductResource($product));
     }
 
     // update a specific product details, this can only be done by product owner/user (Auth)

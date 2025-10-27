@@ -21,7 +21,7 @@ class OrderItemPolicy
      */
     public function view(User $user, OrderItem $orderItem): bool
     {
-        return $orderItem->product->user_id ==== $user->id;
+        return $orderItem->product->user_id === $user->id;
     }
 
     /**

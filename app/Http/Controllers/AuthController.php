@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -21,11 +20,12 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if(!$user || ! Hash::check($request->password, $user->password)){
-            return response()->json(['message' => 'Invalid Login Credentials'], 401);
+            return response()->json([
+                'message' => 'Invalid Login Credentials'
+                ], 401);
         }
 
         $token = $user->createToken($user->name . 'Auth-Token')->plainTextToken;
-
         return response()->json([
             'message' => 'Login Successful',
             'Token_type' => 'Bearer',
@@ -61,8 +61,8 @@ class AuthController extends Controller
 
     //  Profile handler logic
      public function profile(Request $request){
-            $user = $request->user();
-
+            
+        $user = $request->user();
 
             return response()->json([
                 'message'=> 'profile retrived successfully',
@@ -74,9 +74,8 @@ class AuthController extends Controller
 
     //  log out handler
     public function logout (Request $request)
-    
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('id', $request->id)->first();
         
         if($user){
             $user->tokens()->delete();
@@ -85,12 +84,7 @@ class AuthController extends Controller
                 'message' => 'user logged out'
                 ], 200);
         }
-
-
-
     }
-
-    
 
 }
 
